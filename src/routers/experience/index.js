@@ -103,6 +103,7 @@ router.get("/csv/:userName/getCsv", async(req,res) => {
         const fields = ["username", "role", "company", "startDate", "endDate", "description", "area"];
         const opts = { fields }
         const csv = json2csv(experience, opts);
+        console.log(csv)
         res.send(csv)
     } catch(err){
         console.log(err)
