@@ -10,6 +10,7 @@ const Experience = require("./model")
 
 router.get("/", async(req,res) => {
     try{
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3100');
         const experience = await Experience.find({})
         res.status(200).send(experience)
     } catch(err){
