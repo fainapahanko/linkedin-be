@@ -3,9 +3,9 @@ const cors = require('cors');
 const listEndpoints = require("express-list-endpoints");
 const path = require ("path");
 const mongoose = require ("mongoose");
-
+const experienceRouter = require("./src/routers/experience/index")
 const profilesRouter = require("./src/services/profiles/index");
-
+const dotenv = require("dotenv")
 
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
@@ -23,13 +23,20 @@ const requireJSONContentOnlyMiddleware = () => {
     };
 };
 
-const server = express(); // Create http server with express
+
+const server = express();
+dotenv.config();
 const PORT = process.env.PORT;
+
+mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
+  .then(db => console.log("connected to mongodb"), err => console.log("error", err))
 
 server.use(LoggerMiddleware);
 server.use(express.json()); // To parse request bodies into objects
 server.use(cors());
 server.use("/profiles", profilesRouter);
+server.use("/img", express.static("img"))
+server.use("/experiences", experienceRouter)
 
 
 // catch not found errors
