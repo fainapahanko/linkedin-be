@@ -3,7 +3,9 @@ const router = express.Router()
 const path = require("path")
 const fs = require("fs-extra")
 const multer = require("multer")
-const { Transform } = require("json2csv");
+//const { Transform } = require("json2csv");
+const json2csv = require("json2csv").parse;
+//const { parse } = require('json2csv');
 const Experience = require("./model")
 
 router.get("/", async(req,res) => {
@@ -97,18 +99,11 @@ router.delete("/:userName/:id", async(req,res) => {
 
 router.get("/csv/:userName/getCsv", async(req,res) => {
     try{
-        const filePath = path.join(__dirname,"../../../csv")
         const experience = await Experience.find({username: req.params.userName})
         const fields = ["username", "role", "company", "startDate", "endDate", "description", "area"];
         const opts = { fields }
-        const json2csv = new Transform(opts);
-
-    
-        res.setHeader("Content-Disposition", `attachment; filename=file.csv`);
-        const ended = fs.createReadStream(filePath)
-            .pipe(json2csv)
-            .pipe(res)
-        // res.send(ended)
+        const csv = json2csv(experience, opts);
+        res.send(csv)
     } catch(err){
         console.log(err)
         res.send(err)
