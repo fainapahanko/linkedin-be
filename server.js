@@ -13,7 +13,7 @@ dotenv.config()
 mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
   .then(db => console.log("connected to mongodb"), err => console.log("error", err))
 
-server.use(cors())
+server.use(cors());
 server.use(express.json())
 server.use("/experiences", experienceRouter)
 
@@ -34,12 +34,8 @@ const requireJSONContentOnlyMiddleware = () => {
 };
 
 
-const server = express();
 dotenv.config();
 const PORT = process.env.PORT;
-
-
-
 server.use(LoggerMiddleware);
 server.use(express.json()); // To parse request bodies into objects
 server.use(cors());
