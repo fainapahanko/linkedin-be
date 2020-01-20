@@ -1,16 +1,27 @@
-const express = require ("express");
-const cors = require('cors');
 const listEndpoints = require("express-list-endpoints");
-const path = require ("path");
-const mongoose = require ("mongoose");
-
+const express = require("express")
+const mongoose =  require("mongoose")
+const path = require("path")
 const profilesRouter = require("./src/services/profiles/index");
+const experienceRouter = require("./src/routers/experience/index")
+const dotenv = require("dotenv")
+const server = express()
+const cors = require("cors")
+const port = process.env.PORT
+dotenv.config()
 
+mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
+  .then(db => console.log("connected to mongodb"), err => console.log("error", err))
+
+server.use(cors())
+server.use(express.json())
+server.use("/experiences", experienceRouter)
 
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
     next();
 };
+
 const requireJSONContentOnlyMiddleware = () => {
     return (req, res, next) => {
         if (req.headers["content-type"] !== "application/json") {
