@@ -1,26 +1,35 @@
 const listEndpoints = require("express-list-endpoints");
 const express = require("express")
 const mongoose =  require("mongoose")
-const path = require("path")
+var bodyParser = require('body-parser')
 const profilesRouter = require("./src/routers/profiles/index");
+const usersRouter = require("./src/routers/users/index");
 const experienceRouter = require("./src/routers/experience/index")
 const dotenv = require("dotenv")
 const server = express()
 const cors = require("cors")
-const port = process.env.PORT
+const PORT = process.env.PORT;
 dotenv.config()
 
-mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
-  .then(db => console.log("connected to mongodb"), err => console.log("error", err))
+// mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
+//   .then(db => console.log("connected to mongodb"), err => console.log("error", err))
+
+
 
 server.use(cors())
 server.use(express.json())
+server.use(bodyParser.urlencoded({ extended: false }))
+server.use(bodyParser.json())
+server.use("/profiles", profilesRouter);
 server.use("/experiences", experienceRouter)
+server.use("/users", usersRouter)
 
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
     next();
 };
+
+server.use(LoggerMiddleware);
 
 const requireJSONContentOnlyMiddleware = () => {
     return (req, res, next) => {
@@ -34,16 +43,7 @@ const requireJSONContentOnlyMiddleware = () => {
     };
 };
 
-const server = express(); // Create http server with express
-const PORT = process.env.PORT;
-
-server.use(LoggerMiddleware);
-server.use(express.json()); // To parse request bodies into objects
-server.use(cors());
-server.use("/profiles", profilesRouter);
-
-
-// catch not found errors
+//catch not found errors
 server.use((err, req, res, next) => {
     if (err.httpStatusCode === 404) {
         console.log(err);
@@ -51,7 +51,7 @@ server.use((err, req, res, next) => {
     }
     next(err);
 });
-// catch not found errors
+//catch not found errors
 server.use((err, req, res, next) => {
     if (err.httpStatusCode === 401) {
         console.log(err);
@@ -59,7 +59,7 @@ server.use((err, req, res, next) => {
     }
     next(err);
 });
-// catch forbidden errors
+//catch forbidden errors
 server.use((err, req, res, next) => {
     if (err.httpStatusCode === 403) {
         console.log(err);
@@ -67,7 +67,7 @@ server.use((err, req, res, next) => {
     }
     next(err);
 });
-// catch all
+//catch all
 server.use((err, req, res, next) => {
     if (!res.headersSent) {
         res.status(err.httpStatusCode || 500).send(err);
@@ -75,6 +75,10 @@ server.use((err, req, res, next) => {
 });
 
 console.log(listEndpoints(server));
+server.post("/", (req,res) => {
+  console.log(req.body.username)
+  res.send(req.body)
+})
 mongoose.connect("mongodb://localhost:27017/linkedin-db", {
     useNewUrlParser: true,
     useUnifiedTopology: true
