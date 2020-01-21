@@ -3,7 +3,8 @@ const mongoose = require("mongoose")
 const usersSchema = new mongoose.Schema({
     username: { 
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -16,7 +17,11 @@ const usersSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         required: true
-    }
+    },
+    experience: [{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'experience'
+    }]
 },
 {
     timestamps: true
