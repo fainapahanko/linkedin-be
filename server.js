@@ -23,7 +23,7 @@ server.use(bodyParser.urlencoded({ extended: false }))
 server.use(bodyParser.json())
 server.use("/profiles", profilesRouter);
 server.use("/experiences", experienceRouter)
-server.use("/image", express.static('image'))
+server.use("/app/image", express.static('image'))
 server.use("/users", usersRouter)
 server.use("/posts", postsRouter)
 
@@ -83,6 +83,7 @@ server.get("/", (req,res) => {
   console.log("test")
   res.send("test")
 })      
+
 mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true

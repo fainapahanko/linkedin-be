@@ -16,16 +16,16 @@ router.get("/", async(req,res) => {
     }
 })
 
-router.get("/:userName", async(req,res) => {
-    try{
-        const experience = await Experience.find({username: req.params.userName})
-        res.status(200).send(experience)
-    } catch(err){
-        res.send(err)
-    }
-})
+// router.get("/:userName", async(req,res) => {
+//     try{
+//         const experience = await Experience.find({username: req.params.userName})
+//         res.status(200).send(experience)
+//     } catch(err){
+//         res.send(err)
+//     }
+// })
 
-router.get("/:userName/:id", async(req,res) => {
+router.get("/:id", async(req,res) => {
     try{
         const experience = await Experience.findOne({_id: req.params.id})
         res.status(200).send(experience)
@@ -63,7 +63,10 @@ router.post("/:id/picture", upload.single("image"), async(req,res) => {
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/" + req.params.id + path.extname(req.file.originalname);
         await fs.writeFile(imgDest, req.file.buffer)
         const exp = await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false})
-        res.send(exp)
+        res.send({
+            profile: exp,
+            image: imgDestination
+        })
     } catch(err){
         res.send(err)
     }
