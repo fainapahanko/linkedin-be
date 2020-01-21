@@ -1,21 +1,22 @@
 const listEndpoints = require("express-list-endpoints");
-const express = require("express")
-const mongoose =  require("mongoose")
-const path = require("path")
-const profilesRouter = require("./src/services/profiles/index");
-const experienceRouter = require("./src/routers/experience/index")
-const dotenv = require("dotenv")
-const server = express()
-const cors = require("cors")
-const port = process.env.PORT
-dotenv.config()
+const express = require("express");
+const mongoose =  require("mongoose");
+const path = require("path");
+const profilesRouter = require("./src/routers/profiles/index");
+const experienceRouter = require("./src/routers/experience/index");
+const postsRouter = require("./src/routers/posts/index");
+const dotenv = require("dotenv");
+const server = express();
+const cors = require("cors");
+const port = process.env.PORT;
+dotenv.config();
 
 mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
-  .then(db => console.log("connected to mongodb"), err => console.log("error", err))
+  .then(db => console.log("connected to mongodb"), err => console.log("error", err));
 
 server.use(cors());
 server.use(express.json())
-server.use("/experiences", experienceRouter)
+server.use("/experiences", experienceRouter);
 
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
@@ -42,6 +43,7 @@ server.use(cors());
 server.use("/profiles", profilesRouter);
 server.use("/img", express.static("img"));
 server.use("/experiences", experienceRouter);
+server.use("/posts", postsRouter);
 
 
 // catch not found errors

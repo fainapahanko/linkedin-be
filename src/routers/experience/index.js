@@ -6,7 +6,7 @@ const multer = require("multer");
 //const { Transform } = require("json2csv");
 const json2csv = require("json2csv").parse;
 //const { parse } = require('json2csv');
-const Experience = require("./model");
+const Experience = require("../../models/model");
 
 router.get("/", async(req,res) => {
     try{
@@ -75,7 +75,7 @@ router.put("/:userName/:id", async(req,res) => {
             image: "http://trensalon.ru/pic/defaultImage.png",
             createdAt: new Date(),
             updatedAt: new Date()
-        }
+        };
         console.log(obj);
         const exp = await Experience.updateOne({_id: req.params.id}, {$set: {obj}});
         if(exp) res.status(200).send(exp);
@@ -84,7 +84,7 @@ router.put("/:userName/:id", async(req,res) => {
         console.log(err);
         res.send(err)
     }
-})
+});
 
 router.delete("/:userName/:id", async(req,res) => {
     try{
@@ -95,7 +95,7 @@ router.delete("/:userName/:id", async(req,res) => {
         console.log(err);
         res.send(err)
     }
-})
+});
 
 router.get("/csv/:userName/getCsv", async(req,res) => {
     try{
