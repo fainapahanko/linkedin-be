@@ -81,7 +81,11 @@ server.post("/", (req,res) => {
 })
 let options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, 
 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };       
-mongoose.connect(process.env.LOCAL, options)
+mongoose.connect(process.env.LOCAL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 }}
+})
     .then(() => {
         console.log("MongoDB connected.");
         server.listen(PORT, () => {
