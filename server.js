@@ -5,6 +5,7 @@ var bodyParser = require('body-parser')
 const profilesRouter = require("./src/routers/profiles/index");
 const usersRouter = require("./src/routers/users/index");
 const experienceRouter = require("./src/routers/experience/index")
+const postsRouter = require("./src/routers/posts/index")
 const dotenv = require("dotenv")
 const server = express()
 const cors = require("cors")
@@ -22,7 +23,9 @@ server.use(bodyParser.urlencoded({ extended: false }))
 server.use(bodyParser.json())
 server.use("/profiles", profilesRouter);
 server.use("/experiences", experienceRouter)
+server.use("/image", express.static('image'))
 server.use("/users", usersRouter)
+server.use("/posts", postsRouter)
 
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
