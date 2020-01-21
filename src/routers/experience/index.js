@@ -3,14 +3,11 @@ const router = express.Router()
 const path = require("path")
 const fs = require("fs-extra")
 const multer = require("multer")
-//const { Transform } = require("json2csv");
 const json2csv = require("json2csv").parse;
-//const { parse } = require('json2csv');
 const Experience = require("../../models/experience")
 
 router.get("/", async(req,res) => {
     try{
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3100');
         const experience = await Experience.find({})
         res.status(200).send(experience)
     } catch(err){
@@ -47,7 +44,7 @@ router.post("/:userId", async(req,res) => {
         }
         const newExperience = await Experience.create(obj)
         newExperience.save()
-        res.status(200).send(newExperience)
+        res.status(200).send(obj)
     } catch(err) {
         res.send(err)
     }
@@ -62,7 +59,6 @@ router.post("/:userName/:id/picture", upload.single("image"), async(req,res) => 
         const exp = await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination})
         res.send(exp)
     } catch(err){
-        console.log(err)
         res.send(err)
     }
 })
@@ -77,12 +73,10 @@ router.put("/:userName/:id", async(req,res) => {
             createdAt: new Date(),
             updatedAt: new Date()
         }
-        console.log(obj)
         const exp = await Experience.updateOne({_id: req.params.id}, {$set: {obj}})
         if(exp) res.status(200).send(exp)
         else res.status(404).send("Not found")
     } catch(err) {
-        console.log(err)
         res.send(err)
     }
 })
@@ -93,7 +87,6 @@ router.delete("/:userName/:id", async(req,res) => {
         if(exp) res.status(200).send("deleted")
         else res.status(404).send("Not found")
     } catch(err) {
-        console.log(err)
         res.send(err)
     }
 })
@@ -104,10 +97,8 @@ router.get("/csv/:userName/getCsv", async(req,res) => {
         const fields = ["username", "role", "company", "startDate", "endDate", "description", "area"];
         const opts = { fields }
         const csv = json2csv(experience, opts);
-        console.log(csv)
         res.send(csv)
     } catch(err){
-        console.log(err)
         res.send(err)
     }
 })
