@@ -75,6 +75,7 @@ server.use((err, req, res, next) => {
 });
 
 console.log(listEndpoints(server));
+
 server.get("/", (req,res) => {
   console.log("test")
   res.send("test")
