@@ -6,7 +6,7 @@ const multer = require("multer")
 //const { Transform } = require("json2csv");
 const json2csv = require("json2csv").parse;
 //const { parse } = require('json2csv');
-const Experience = require("./model")
+const Experience = require("../../models/experience")
 
 router.get("/", async(req,res) => {
     try{
