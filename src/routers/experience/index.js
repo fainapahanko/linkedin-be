@@ -57,19 +57,19 @@ router.post("/:userName", async(req,res) => {
 })
 
 const upload = multer({})
-router.post("/:userName/:id/picture", upload.single("image"), async(req,res) => {
+router.post("/:id/picture", upload.single("image"), async(req,res) => {
     try{
-        const imgDest = path.join(__dirname,"../../../img/" + req.params.id + req.file.originalname)
-        const imgDestination = req.protocol + "://" + req.get("host") + "/img/" + req.params.id + path.extname(req.file.originalname);
+        const imgDest = path.join(__dirname,"../../../image/" + req.params.id + req.file.originalname)
+        const imgDestination = req.protocol + "://" + req.get("host") + "/image/" + req.params.id + path.extname(req.file.originalname);
         await fs.writeFile(imgDest, req.file.buffer)
-        const exp = await Experience.findOneAndUpdate({username: req.params.username}, {image: imgDestination})
+        const exp = await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false})
         res.send(exp)
     } catch(err){
         res.send(err)
     }
 })
 
-router.put("/:userName/:id", async(req,res) => {
+router.put("/:id", async(req,res) => {
     try{
         delete req.body._id
         const obj = {
@@ -87,7 +87,7 @@ router.put("/:userName/:id", async(req,res) => {
     }
 })
 
-router.delete("/:userName/:id", async(req,res) => {
+router.delete("/:id", async(req,res) => {
     try{
         const exp = await Experience.findByIdAndRemove({_id: req.params.id})
         if(exp) res.status(200).send("deleted")

@@ -18,6 +18,10 @@ const usersSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    profile: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'profile'
+    },
     experience: [{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'experience'
