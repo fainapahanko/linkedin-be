@@ -75,9 +75,9 @@ server.use((err, req, res, next) => {
 });
 
 console.log(listEndpoints(server));
-server.post("/", (req,res) => {
-  console.log(req.body.username)
-  res.send(req.body)
+server.get("/", (req,res) => {
+  console.log("test")
+  res.send("test")
 })      
 mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
