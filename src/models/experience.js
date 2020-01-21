@@ -29,9 +29,7 @@ const experienceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
-        // type: mongoose.Schema.Types.ObjectId, 
-        // ref: 'profile'
+    username: {
         type: String,
         required: true
     },

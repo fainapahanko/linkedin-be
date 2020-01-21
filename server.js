@@ -79,7 +79,7 @@ server.post("/", (req,res) => {
   console.log(req.body.username)
   res.send(req.body)
 })
-mongoose.connect("mongodb://localhost:27017/linkedin-db", {
+mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
