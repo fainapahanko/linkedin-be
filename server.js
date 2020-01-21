@@ -78,13 +78,10 @@ console.log(listEndpoints(server));
 server.post("/", (req,res) => {
   console.log(req.body.username)
   res.send(req.body)
-})
-let options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, 
-replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };       
+})      
 mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-    server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 }}
+    useUnifiedTopology: true
 })
     .then(() => {
         console.log("MongoDB connected.");
