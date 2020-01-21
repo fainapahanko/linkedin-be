@@ -8,7 +8,7 @@ const experienceRouter = require("./src/routers/experience/index")
 const dotenv = require("dotenv")
 const server = express()
 const cors = require("cors")
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3333
 dotenv.config()
 
 // mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
