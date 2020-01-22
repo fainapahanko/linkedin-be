@@ -23,10 +23,11 @@ postsRouter.get("/:postId", async (req, res) => {
         res.send(error)
     }
 });
-postsRouter.post("/:id", async (req, res) => {
+postsRouter.post("/", async (req, res) => {
     try {
-        const newPost = await Post.create(req.body);
-        console.log(req.body);
+        const post = {...req.body, username: req.user.username};
+        const newPost = await Post.create(post);
+        //console.log(req.body);
         newPost.save();
         res.send(newPost);
     } catch (error) {

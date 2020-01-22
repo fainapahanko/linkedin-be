@@ -13,7 +13,7 @@ var postSchema = new Schema({
     },
     image:{
         type: String,
-        default: 'http://via.placeholder.com/640x360'
+        //default: 'http://via.placeholder.com/640x360'
     }
 }, { timestamps: true});
 

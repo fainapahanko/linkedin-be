@@ -1,26 +1,26 @@
 const express = require("express")
-const router = express.Router()
-const bcrypt = require('bcrypt')
-var passport = require('passport')
-const User = require("../../models/users")
+const router = express.Router();
+const bcrypt = require('bcrypt');
+var passport = require('passport');
+const User = require("../../models/users");
 
 router.get("/", async(req,res) => {
     try{
-        const experience = await User.find({})
+        const experience = await User.find({});
         res.status(200).send(experience)
     } catch(err){
         res.send(err)
     }
-})
+});
 
 router.get("/:id", async(req,res) => {
     try{
-        const experience = await User.findOne({_id: req.params.id})
+        const experience = await User.findOne({_id: req.params.id});
         res.status(200).send(experience)
     } catch(err) {
         res.status(500).send(err)
     }
-})
+});
 
 
 
