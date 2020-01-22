@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const bcrypt = require('bcrypt')
+var passport = require('passport')
 const User = require("../../models/users")
 
 router.get("/", async(req,res) => {
@@ -21,10 +22,12 @@ router.get("/:id", async(req,res) => {
     }
 })
 
+
+
 router.post("/", async(req,res) => {
     try{
-        const salt = await bcrypt.genSalt()
-        const hachedPassword = await bcrypt.hash(req.body.password, salt)
+        const salt = await bcrypt.genSalt();
+        const hachedPassword = await bcrypt.hash(req.body.password, salt);
         const obj = {
             username: req.body.username,
             password: hachedPassword,

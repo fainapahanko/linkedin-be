@@ -11,15 +11,30 @@ profilesRouter.get("/", async (req, res)=>{
     const profiles = await Profile.find({});
     res.send(profiles);
 });
-profilesRouter.get("/:_id", async(req,res)=> {
 
-    const profile = await Profile.findOne({_id: req.params._id});
+profilesRouter.get("/me", async(req,res)=> {
+
+    console.log("user", req.user.username);
+    const profile = await Profile.findOne({username: req.user.username});
     if (profile) {
 
         res.send(profile);
     } else
         res.status(404).send("Not found")
 });
+
+profilesRouter.get("/:username", async(req,res)=> {
+
+    const profile = await Profile.findOne({username: req.params.username});
+    if (profile) {
+
+        res.send(profile);
+    } else
+        res.status(404).send("Not found")
+});
+
+
+
 profilesRouter.post("/", async (req, res)=>{
     let profiles = await readProfiles();
     const s = profiles.find(profile => profile.name === req.body.name);
