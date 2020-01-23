@@ -10,26 +10,14 @@ const usersSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    createdAt: {
-        type: Date,
-        required: true
-    },
-    updatedAt: {
-        type: Date,
-        required: true
-    },
     profile: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'profile'
-    },
-    experience: [{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'experience'
-    }]
+        ref: 'profiles'
+    }
 },
 {
     timestamps: true
-})
+});
 
 const usersCollection = mongoose.model("user", usersSchema)
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-var postSchema = new Schema({
+const postSchema = new Schema({
     text: {
         type: String,
         required: [true, "Type in a comment!"],
@@ -14,7 +14,11 @@ var postSchema = new Schema({
     image:{
         type: String,
         //default: 'http://via.placeholder.com/640x360'
-    }
+    },
+    comments: [{
+            type: Schema.Types.ObjectId,
+            ref: "Comment"
+    }]
 }, { timestamps: true});
 
 const postsCollection = mongoose.model('Post', postSchema);
