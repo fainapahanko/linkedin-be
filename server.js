@@ -1,38 +1,102 @@
 const listEndpoints = require("express-list-endpoints");
-const express = require("express")
-const mongoose =  require("mongoose")
-var bodyParser = require('body-parser')
+const express = require("express");
+const mongoose =  require("mongoose");
+var bodyParser = require('body-parser');
+var session = require("express-session");
 const profilesRouter = require("./src/routers/profiles/index");
 const usersRouter = require("./src/routers/users/index");
-const experienceRouter = require("./src/routers/experience/index")
-const postsRouter = require("./src/routers/posts/index")
-const dotenv = require("dotenv")
-const server = express()
-const cors = require("cors")
-const PORT = process.env.PORT || 3333
-dotenv.config()
+const experienceRouter = require("./src/routers/experience/index");
+const commentsRouter = require("./src/routers/comments/index");
+const postsRouter = require("./src/routers/posts/index");
+const dotenv = require("dotenv");
+const server = express();
+const cookieParser = require("cookie-parser");
+const User = require("./src/models/users");
+const cors = require("cors");
+const bcrypt = require('bcrypt');
+
+const PORT = process.env.PORT || 3333;
+
+dotenv.config();
+
+var passport = require('passport')
+    , BasicStrategy = require('passport-http').BasicStrategy;
+
+
+passport.serializeUser(function(user, done) {
+    done(null, user._id);
+});
+
+passport.deserializeUser(function(id, done) {
+    User.findOne({_id: id}).then(user => {
+        done(undefined, user);
+    }, err => {done(err, null)});
+});
+
+passport.use(new BasicStrategy(
+     function(username, password, done) {
+        User.findOne({ username: username }, async function (err, user) {
+
+            if (err) { return done(err); }
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            try {
+                const result = await bcrypt.compare(password, user.password);
+                //console.log(result);
+                if (!result) {
+                    return done(null, false, { message: 'Incorrect password.' });
+                }
+                return done(null, user);
+            } catch (e) {
+                console.log(e);
+            }
+
+        });
+    }
+));
+
+const isAuthenticated = (req, res, next) => {
+    passport.authenticate('basic', { session: false })(req, res, next)
+};
 
 // mongoose.connect("mongodb://localhost:27017/linkedin-db",{useNewUrlParser: true})
 //   .then(db => console.log("connected to mongodb"), err => console.log("error", err))
-
-
-
-server.use(cors())
-server.use(express.json())
-server.use(bodyParser.urlencoded({ extended: false }))
-server.use(bodyParser.json())
-server.use("/profiles", profilesRouter);
-server.use("/experiences", experienceRouter)
-server.use("/app/image", express.static('image'))
-server.use("/users", usersRouter)
-server.use("/posts", postsRouter)
-
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
+    //console.log(req.session);
     next();
 };
 
+
 server.use(LoggerMiddleware);
+server.use(cors());
+server.use(express.json());
+// server.use(cookieParser());
+server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
+server.use(session({ secret: '98213419263127', cookie: { maxAge: 600000 }, saveUninitialized: true, resave: true }));
+server.use(passport.initialize());
+server.use(passport.session());
+server.use("/img", express.static('img'));
+server.use("/profile", isAuthenticated, profilesRouter);
+server.use("/profile/:username/experiences", isAuthenticated, experienceRouter);
+server.use("/app/image", express.static('image'));
+server.use("/users", isAuthenticated, usersRouter);
+server.use("/posts", isAuthenticated, postsRouter);
+server.use("/comments", isAuthenticated, commentsRouter);
+
+
+
+
+
+server.options("/login");
+
+server.post("/login",  passport.authenticate('basic'), function(req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    res.redirect('/profile/' + req.user.username);
+});
 
 const requireJSONContentOnlyMiddleware = () => {
     return (req, res, next) => {
@@ -79,11 +143,8 @@ server.use((err, req, res, next) => {
 
 console.log(listEndpoints(server));
 
-server.get("/", (req,res) => {
-  console.log("test")
-  res.send("test")
-})      
 
+console.log(process.env.LOCAL);
 mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
