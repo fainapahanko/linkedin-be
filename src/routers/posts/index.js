@@ -131,7 +131,7 @@ postsRouter.put("/:id/comment/:commentId", async (req, res) => {
         res.status(400).send(error);
     }
 });
-postsRouter.delete("/:id/comment/:commentId", async (req, res) => {
+postsRouter.delete("/comment/:commentId", async (req, res) => {
     try {
         const comment = await Comment.findOneAndDelete({_id: req.params.commentId});
         res.send(comment);
