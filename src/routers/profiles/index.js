@@ -3,7 +3,7 @@ const Profile = require("../../models/profiles");
 const profilesRouter = express.Router();
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs-extra");
 
 const readProfiles = async () => {
     return await Profile.find();
@@ -80,7 +80,7 @@ profilesRouter.post("/:username/picture", upload.single("profile"), async (req, 
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/profiles/" + req.params.username + req.file.originalname;
         console.log("imgDest: ", imgDest)
         console.log("imgDestination: ", imgDestination)
-        await fs.writeFileSync(imgDest, req.file.buffer);
+        await fs.writeFile(imgDest, req.file.buffer);
         console.log(imgDestination);
         const exp = await Profile.findOneAndUpdate({username: req.params.username}, {image: imgDestination}, {new: true, useFindAndModify: false});
         res.send(exp)
