@@ -13,15 +13,13 @@ postsRouter.get("/", async (req, res) => {
 
 postsRouter.get("/:postId", async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId)
-        res.send(post)
-        // .populate({path: "comments", populate: { path: 'postedBy', select: 'username profile', populate: { path: 'profile'}}});
-        // if (post) {
-        //     post.comments[0].populate("postedBy").execPopulate();
-        //     res.send(post);
-        // } else {
-        //     res.status(404).send("Not found");
-        // }
+        const post = await Post.findById(req.params.postId).populate({path: "comments", populate: { path: 'postedBy', select: 'username profile', populate: { path: 'profile'}}});
+        if (post) {
+            post.comments[0].populate("postedBy").execPopulate();
+            res.send(post);
+        } else {
+            res.status(404).send("Not found");
+        }
     } catch (error) {
         console.log();
         res.send(error)
