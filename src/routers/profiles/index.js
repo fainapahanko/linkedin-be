@@ -75,7 +75,7 @@ const upload = multer({});
 profilesRouter.post("/:username/picture", upload.single("profile"), async (req, res) => {
     console.log("Entering the picture upload");
     try {
-        let imgDest = path.join(__dirname, "../../../image/profiles/image.jpg" );
+        let imgDest = path.join(__dirname, "../../../", "image", "profiles", "image.jpg" );
         console.log("imgDest: ", imgDest, __dirname)
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/profiles/" + req.params.username + req.file.originalname;
         console.log("imgDest: ", imgDest)
