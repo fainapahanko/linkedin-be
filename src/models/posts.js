@@ -15,6 +15,16 @@ const postSchema = new Schema({
         type: String,
         //default: 'http://via.placeholder.com/640x360'
     },
+    likesTotal: {
+        type: Number,
+        default: 0
+    },
+    likes: [{
+        userId: {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User'
+        }
+    }],
     comments: [{
             type: Schema.Types.ObjectId,
             ref: "Comment"
