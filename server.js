@@ -93,8 +93,11 @@ server.options("/login");
 server.post("/login",  passport.authenticate('basic'), function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
+    console.log(req.user)
     res.redirect('/profile/' + req.user.username);
 });
+
+
 
 const requireJSONContentOnlyMiddleware = () => {
     return (req, res, next) => {
