@@ -77,6 +77,8 @@ profilesRouter.post("/:username/picture", upload.single("profile"), async (req, 
     try {
         const imgDest = path.join(__dirname, "../../../image/profiles/" + req.params.username + req.file.originalname);
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/profiles/" + req.params.username + req.file.originalname;
+        console.log("imgDest: ", imgDest)
+        console.log("imgDestination: ", imgDestination)
         await fs.writeFileSync(imgDest, req.file.buffer);
         console.log(imgDestination);
         const exp = await Profile.findOneAndUpdate({username: req.params.username}, {image: imgDestination}, {new: true, useFindAndModify: false});
