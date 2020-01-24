@@ -77,7 +77,6 @@ profilesRouter.post("/:username/picture", upload.single("profile"), async (req, 
     try {
         let imgDest = path.join(__dirname, "../../../image/profiles/" + req.params.username + req.file.originalname);
         console.log("imgDest: ", imgDest)
-        imgDest = imgDest.replace("/app", "")
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/profiles/" + req.params.username + req.file.originalname;
         console.log("imgDest: ", imgDest)
         console.log("imgDestination: ", imgDestination)
