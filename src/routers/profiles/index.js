@@ -73,7 +73,7 @@ profilesRouter.delete("/:_id", async (req, res)=>{
 });
 const upload = multer({});
 profilesRouter.post("/:username/picture", upload.single("profile"), async (req, res) => {
-    //console.log(req);
+    console.log("Entering the picture upload");
     try {
         const imgDest = path.join(__dirname, "../../../image/profiles/" + req.params.username + req.file.originalname);
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/profiles/" + req.params.username + req.file.originalname;
