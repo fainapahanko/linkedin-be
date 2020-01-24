@@ -13,13 +13,15 @@ postsRouter.get("/", async (req, res) => {
 
 postsRouter.get("/:postId", async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId).populate({path: "comments", populate: { path: 'postedBy', select: 'username profile', populate: { path: 'profile'}}});
-        if (post) {
-            post.comments[0].populate("postedBy").execPopulate();
-            res.send(post);
-        } else {
-            res.status(404).send("Not found");
-        }
+        const post = await Post.findById(req.params.postId)
+        res.send(post)
+        // .populate({path: "comments", populate: { path: 'postedBy', select: 'username profile', populate: { path: 'profile'}}});
+        // if (post) {
+        //     post.comments[0].populate("postedBy").execPopulate();
+        //     res.send(post);
+        // } else {
+        //     res.status(404).send("Not found");
+        // }
     } catch (error) {
         console.log();
         res.send(error)
@@ -80,13 +82,12 @@ postsRouter.post("/:postId/picture", upload.single("image"), async (req, res) =>
 
 postsRouter.post("/likes/:postId", async(req,res) => {
     const userLike = await Post.findOne({_id: req.params.postId })
-    const likes = userLike.likes
-    const user = likes.find(currentLike => currentLike.userId = req.user._id)
-    if(user){
-        const newPost = await Post.findOneAndUpdate({_id: req.params.postId}, {$pull: { "likes" : {userId: req.user._id, _id: user._id} }, $inc : {likesTotal: -1}}, {useFindAndModify: false})
+    const likesPart = userLike.likes
+    if(likesPart.some(like => like.username == req.user.username)){
+        const newPost = await Post.findOneAndUpdate({_id: req.params.postId}, {$pull: { "likes" : {userId: req.user._id} }, $inc : {likesTotal: -1}}, {useFindAndModify: false})
         res.send(newPost)
     } else {
-        const newPost = await Post.findOneAndUpdate({_id: req.params.postId}, {$push: { "likes" : {userId: req.user._id} }, $inc : {likesTotal: 1}}, {useFindAndModify: false})
+        const newPost = await Post.findOneAndUpdate({_id: req.params.postId}, {$push: { "likes" : {userId: req.user._id, username: req.user.username} }, $inc : {likesTotal: 1}}, {useFindAndModify: false})
         res.send(newPost)
     }
 })
