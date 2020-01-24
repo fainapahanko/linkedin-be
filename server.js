@@ -1,12 +1,12 @@
 const listEndpoints = require("express-list-endpoints");
 const express = require("express");
 const mongoose =  require("mongoose");
-var bodyParser = require('body-parser');
-var session = require("express-session");
+const bodyParser = require('body-parser');
+const session = require("express-session");
 const profilesRouter = require("./src/routers/profiles/index");
 const usersRouter = require("./src/routers/users/index");
 const experienceRouter = require("./src/routers/experience/index");
-const commentsRouter = require("./src/routers/comments/index");
+// const commentsRouter = require("./src/routers/comments/index");
 const postsRouter = require("./src/routers/posts/index");
 const dotenv = require("dotenv");
 const server = express();
@@ -22,7 +22,7 @@ dotenv.config();
 var passport = require('passport')
     , BasicStrategy = require('passport-http').BasicStrategy;
 
-
+// function needed to serialize/deserialize the user
 passport.serializeUser(function(user, done) {
     done(null, user._id);
 });
@@ -32,7 +32,8 @@ passport.deserializeUser(function(id, done) {
         done(undefined, user);
     }, err => {done(err, null)});
 });
-
+// setup of passport to use the Basic Authentication and verify the password with one saved on the database
+// using bcrypt to hash the password
 passport.use(new BasicStrategy(
      function(username, password, done) {
         User.findOne({ username: username }, async function (err, user) {
@@ -55,7 +56,8 @@ passport.use(new BasicStrategy(
         });
     }
 ));
-
+// function chained on the request to verify if the user is loggedin
+// the endpoints with this function chained will be not available to anonymous users
 const isAuthenticated = (req, res, next) => {
     passport.authenticate('basic', { session: false })(req, res, next)
 };
@@ -82,16 +84,16 @@ server.use("/img", express.static('img'));
 server.use("/profile", isAuthenticated, profilesRouter);
 server.use("/profile/:username/experiences", isAuthenticated, experienceRouter);
 server.use("/app/image", express.static('image'));
-server.use("/users", isAuthenticated, usersRouter);
+server.use("/users", usersRouter);
 server.use("/posts", isAuthenticated, postsRouter);
-server.use("/comments", isAuthenticated, commentsRouter);
+// server.use("/comments", isAuthenticated, commentsRouter);
 
 
 
 
 
 server.options("/login");
-
+// endpoint used on the frontend to login the user and retrieve the user information
 server.post("/login",  passport.authenticate('basic'), function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
