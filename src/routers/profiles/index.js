@@ -34,8 +34,6 @@ profilesRouter.get("/:username", async(req,res)=> {
         res.status(404).send("Not found")
 });
 
-
-
 profilesRouter.post("/", async (req, res)=>{
     let profiles = await readProfiles();
     const s = profiles.find(profile => profile.name === req.body.name);

@@ -77,6 +77,20 @@ postsRouter.post("/:postId/picture", upload.single("image"), async (req, res) =>
         res.send(err)
     }
 });
+
+postsRouter.post("/likes/:postId", async(req,res) => {
+    const userLike = await Post.findOne({_id: req.params.postId })
+    const likes = userLike.likes
+    const user = likes.find(currentLike => currentLike.userId = req.user._id)
+    if(user){
+        const newPost = await Post.findOneAndUpdate({_id: req.params.postId}, {$pull: { "likes" : {userId: req.user._id, _id: user._id} }, $inc : {likesTotal: -1}}, {useFindAndModify: false})
+        res.send(newPost)
+    } else {
+        const newPost = await Post.findOneAndUpdate({_id: req.params.postId}, {$push: { "likes" : {userId: req.user._id} }, $inc : {likesTotal: 1}}, {useFindAndModify: false})
+        res.send(newPost)
+    }
+})
+
 postsRouter.get("/:id/comment", async (req, res) => {
     try {
         const comment = await Comment.findById(req.params.comment);
