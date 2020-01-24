@@ -80,7 +80,7 @@ server.use(bodyParser.json());
 server.use(session({ secret: '98213419263127', cookie: { maxAge: 600000 }, saveUninitialized: true, resave: true }));
 server.use(passport.initialize());
 server.use(passport.session());
-server.use("/img", express.static('img'));
+//server.use("/img", express.static('img'));
 server.use("/profile", isAuthenticated, profilesRouter);
 server.use("/profile/:username/experiences", isAuthenticated, experienceRouter);
 server.use("/app/image", express.static('image'));

@@ -63,8 +63,8 @@ const upload = multer({});
 postsRouter.post("/:postId/picture", upload.single("image"), async (req, res) => {
     //console.log(req);
     try {
-        const imgDest = path.join(__dirname, "../../../img/posts/" + req.params.postId + req.file.originalname);
-        const imgDestination = req.protocol + "://" + req.get("host") + "/img/posts/" + req.params.postId + req.file.originalname;
+        const imgDest = path.join(__dirname, "../../../image/posts/" + req.params.postId + req.file.originalname);
+        const imgDestination = req.protocol + "://" + req.get("host") + "/image/posts/" + req.params.postId + req.file.originalname;
         await fs.writeFileSync(imgDest, req.file.buffer);
         console.log(imgDestination);
         const exp = await Post.findOneAndUpdate({_id: req.params.postId}, {image: imgDestination}, {
