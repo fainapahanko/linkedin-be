@@ -15,7 +15,7 @@ const User = require("./src/models/users");
 const cors = require("cors");
 const bcrypt = require('bcrypt');
 
-const PORT = process.env.PORT || 3333;
+const PORT = process.env.PORT || 3433;
 
 dotenv.config();
 
