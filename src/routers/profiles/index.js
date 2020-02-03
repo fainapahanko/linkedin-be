@@ -10,7 +10,7 @@ const readProfiles = async () => {
 };
 profilesRouter.get("/", async (req, res)=>{
     if (req.query.name)
-         return res.send(await Profile.find({ name.toLowerCase(): req.query.name}));
+         return res.send(await Profile.find({ name: req.query.name}));
     const profiles = await Profile.find({});
     res.send(profiles);
 });
