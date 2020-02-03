@@ -5,7 +5,7 @@ const fs = require("fs-extra")
 const multer = require("multer")
 const json2csv = require("json2csv").parse;
 const Experience = require("../../models/experience")
-const User = require("../../models/users")
+const Profile = require("../../models/profiles")
 
 router.get("/", async(req,res) => {
     try{
@@ -44,11 +44,11 @@ router.post("/", async(req,res) => {
             updatedAt: new Date()
         };
         const newExperience = await Experience.create(obj)
-        // const user = await User.updateOne(
-        //     { username: req.params.userName },
-        //     { $push: { "experience" : newExperience._id } }
-        // )
-        // user.save()
+        const user = await Profile.updateOne(
+            { username: req.params.userName },
+            { $push: { "experience" : newExperience._id } }
+        )
+        user.save()
         newExperience.save();
         res.status(200).send(newExperience)
     } catch(err) {
