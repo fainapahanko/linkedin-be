@@ -40,7 +40,11 @@ const profileSchema = new mongoose.Schema({
         username: {
             type: String,
             required: true
-        }
+        },
+        experiences: [{
+             type: mongoose.Schema.Types.ObjectId, 
+             ref: 'experience'
+        }]
     },
     {timestamps: true});
 const profileList = mongoose.model("profiles", profileSchema);
