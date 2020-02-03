@@ -59,7 +59,7 @@ router.post("/", async(req,res) => {
 const upload = multer({})
 router.post("/:id/picture", upload.single("experience"), async(req,res) => {
     try{
-        const imgDest = path.join(__dirname,"../../../image/experience/" + req.params.id + req.file.originalname);
+        const imgDest = path.join(__dirname,"../../../image/experience/", "image.jpg");
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/experience/" + req.params.id + req.file.originalname;
         await fs.writeFile(imgDest, req.file.buffer);
         const profile = await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false, new: true});
