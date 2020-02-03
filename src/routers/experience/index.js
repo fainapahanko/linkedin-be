@@ -39,7 +39,6 @@ router.post("/", async(req,res) => {
         const obj = {
             ...req.body,
             username: req.user.username,
-            image: "http://trensalon.ru/pic/defaultImage.png",
             createdAt: new Date(),
             updatedAt: new Date()
         };
