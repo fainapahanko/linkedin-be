@@ -6,6 +6,7 @@ const multer = require("multer")
 const json2csv = require("json2csv").parse;
 const Experience = require("../../models/experience")
 const User = require("../../models/users")
+const passport = require('passport')
 
 router.get("/", async(req,res) => {
     try{
@@ -16,15 +17,6 @@ router.get("/", async(req,res) => {
     }
 });
 
-// router.get("/:userName", async(req,res) => {
-//     try{
-//         const experience = await Experience.find({username: req.params.userName})
-//         res.status(200).send(experience)
-//     } catch(err){
-//         res.send(err)
-//     }
-// })
-
 router.get("/:id", async(req,res) => {
     try{
         const experience = await Experience.findOne({_id: req.params.id})
@@ -34,7 +26,7 @@ router.get("/:id", async(req,res) => {
     }
 });
 
-router.post("/", async(req,res) => {
+router.post("/", passport.authenticate('jwt'), async(req,res) => {
     try{
         const obj = {
             ...req.body,

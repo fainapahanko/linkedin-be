@@ -15,11 +15,11 @@ const profileSchema = new mongoose.Schema({
             type: String,
             required: true,
             lowercase: true,
-            // validate(value) {
-            //     if (!validator.isEmail(value)) {
-            //         throw new Error("Email is invalid!");
-            //     }
-            // }
+            validate(value) {
+                if (!validator.isEmail(value)) {
+                    throw new Error("Email is invalid!");
+                }
+            }
         },
         bio: {
             type: String,
@@ -35,7 +35,8 @@ const profileSchema = new mongoose.Schema({
         },
         image: {
             type: String,
-            required: false
+            required: false,
+            default: "https://fooddole.com/Modules/eCommerce/images/default-img.png"
         },
         username: {
             type: String,

@@ -13,7 +13,6 @@ const postSchema = new Schema({
     },
     image:{
         type: String,
-        //default: 'http://via.placeholder.com/640x360'
     },
     likesTotal: {
         type: Number,
