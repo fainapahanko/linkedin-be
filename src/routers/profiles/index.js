@@ -7,9 +7,12 @@ const path = require("path");
 const fs = require("fs-extra");
 const passport = require('passport')
 
-profilesRouter.get("/", async (req, res) => {
+const readProfiles = async () => {
+    return await Profile.find();
+};
+profilesRouter.get("/", async (req, res)=>{
     if (req.query.name)
-        return res.send(await Profile.find({ name: req.query.name }));
+         return res.send(await Profile.find({ name: req.query.name}));
     const profiles = await Profile.find({});
     res.send(profiles);
 });
