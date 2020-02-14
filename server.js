@@ -1,8 +1,8 @@
 const listEndpoints = require("express-list-endpoints");
 const express = require("express");
 const mongoose =  require("mongoose");
-// const session = require('express-session')
 const profilesRouter = require("./src/routers/profiles/index");
+const authRouter = require("./src/routers/auth/index");
 const usersRouter = require("./src/routers/users/index");
 const experienceRouter = require("./src/routers/experience/index");
 const postsRouter = require("./src/routers/posts/index");
@@ -34,25 +34,26 @@ server.use(cors());
 //  }));
 server.use(express.json())
 server.use(passport.initialize())
-// server.use(passport.session())
+server.use(passport.session())
 
 server.use("/profile", profilesRouter);
+server.use("/auth", authRouter);
 server.use("/profile/:username/experiences", experienceRouter);
 server.use("/image", express.static('image'));
 server.use("/users", usersRouter);
 server.use("/posts", postsRouter);
 
-// const requireJSONContentOnlyMiddleware = () => {
-//     return (req, res, next) => {
-//         if (req.headers["content-type"] !== "application/json") {
-//             res
-//                 .status(400)
-//                 .send("Server requires application/json only as content type");
-//         } else {
-//             next();
-//         }
-//     };
-// };
+const requireJSONContentOnlyMiddleware = () => {
+    return (req, res, next) => {
+        if (req.headers["content-type"] !== "application/json") {
+            res
+                .status(400)
+                .send("Server requires application/json only as content type");
+        } else {
+            next();
+        }
+    };
+};
 
 //catch not found errors
 server.use((err, req, res, next) => {
@@ -88,14 +89,6 @@ server.use((err, req, res, next) => {
     }
 });
 
-server.get('/lol', (req,res) => {
-    console.log('nu ty i loch')
-})
-
-server.post('/test', passport.authenticate('local',{
-    successRedirect: '/profile/me',
-    failureRedirect: '/lol'
-}))
 
 console.log(listEndpoints(server));
 server.listen(PORT, () => {

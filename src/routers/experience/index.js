@@ -5,7 +5,7 @@ const fs = require("fs-extra")
 const multer = require("multer")
 const json2csv = require("json2csv").parse;
 const Experience = require("../../models/experience")
-const User = require("../../models/users")
+const Profiles = require("../../models/profiles")
 const passport = require('passport')
 
 router.get("/", async(req,res) => {
@@ -35,7 +35,7 @@ router.post("/", passport.authenticate('jwt'), async(req,res) => {
             updatedAt: new Date()
         };
         const newExperience = await Experience.create(obj)
-        const user = await User.updateOne(
+        const user = await Profiles.updateOne(
             { username: req.params.userName },
             { $push: { "experience" : newExperience._id } }
         )

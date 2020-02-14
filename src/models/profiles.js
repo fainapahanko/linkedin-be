@@ -13,13 +13,7 @@ const profileSchema = new mongoose.Schema({
         },
         email: {
             type: String,
-            required: true,
-            lowercase: true,
-            validate(value) {
-                if (!validator.isEmail(value)) {
-                    throw new Error("Email is invalid!");
-                }
-            }
+            required: true
         },
         bio: {
             type: String,
@@ -41,7 +35,21 @@ const profileSchema = new mongoose.Schema({
         username: {
             type: String,
             required: true
-        }
+        },
+        createdAt: {
+            type: Date,
+            required: true
+        },
+        updatedAt: {
+            type: Date,
+            required: true
+        },
+        experiences: [
+            {
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'experience' 
+            }
+        ]
     },
     {timestamps: true});
 const profileList = mongoose.model("profiles", profileSchema);

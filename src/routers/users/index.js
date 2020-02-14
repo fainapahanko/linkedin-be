@@ -4,6 +4,10 @@ const passport = require('passport');
 const { getToken } = require('../../utils/auth')
 const User = require("../../models/users");
 
+const isAuthenticated = (req, res, next) => {
+    passport.authenticate('local', { session: false })(req, res, next)
+};
+
 router.get("/", async(req,res) => {
     try{
         const experience = await User.find({});
@@ -36,7 +40,8 @@ router.post("/signup", async(req,res) => {
 });
 
 router.post('/signin',
- passport.authenticate('local'),
+//  passport.authenticate('local',  {session: false}),
+isAuthenticated,
   (req,res) => {
     try{
         const token = getToken({_id: req.user._id})

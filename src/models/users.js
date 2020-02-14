@@ -10,12 +10,17 @@ const usersSchema = new mongoose.Schema({
     profile: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'profiles'
+    },
+    facebookId: {
+        type: String,
+        required:false
     }
 },
 {
     timestamps: true
 });
 
-usersSchema.plugin(passportLocalMongoose)
+usersSchema.plugin(passportLocalMongoose, {
+    usernameField : "username"})
 
 module.exports = mongoose.model("user", usersSchema)

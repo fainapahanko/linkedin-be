@@ -12,6 +12,6 @@ const commentSchema = new Schema({
     }
 },{timestamps: true});
 
-const commentList = mongoose.model("Comment", commentSchema);
+const commentList = mongoose.model("comment", commentSchema);
 
 module.exports = commentList;

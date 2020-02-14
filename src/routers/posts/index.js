@@ -1,6 +1,7 @@
 const express = require("express");
 const Comment = require("../../models/comment");
 const Post = require("../../models/posts");
+const passport = require('passport')
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -25,11 +26,12 @@ postsRouter.get("/:postId", async (req, res) => {
         res.send(error)
     }
 });
-postsRouter.post("/", async (req, res) => {
+postsRouter.post("/:username", passport.authenticate('jwt'), async (req, res) => {
     try {
-        const post = {...req.body, username: req.user.username};
+        console.log('hello')
+        const post = {...req.body, username: req.params.username};
         const newPost = await Post.create(post);
-        //console.log(req.body);
+        console.log(req.body);
         newPost.save();
         res.send(newPost);
     } catch (error) {
@@ -37,7 +39,7 @@ postsRouter.post("/", async (req, res) => {
     }
 });
 
-postsRouter.put("/:postId", async (req, res) => {
+postsRouter.put("/:postId",passport.authenticate('jwt'), async (req, res) => {
 
     try {
         const post = await Post.findOneAndUpdate(
@@ -51,7 +53,7 @@ postsRouter.put("/:postId", async (req, res) => {
     }
 });
 
-postsRouter.delete("/:postId", async (req, res) => {
+postsRouter.delete("/:postId",passport.authenticate('jwt'), async (req, res) => {
     try {
         const post = await Post.findOneAndDelete({_id: req.params.postId});
         res.send(post);
@@ -60,11 +62,11 @@ postsRouter.delete("/:postId", async (req, res) => {
     }
 });
 const upload = multer({});
-postsRouter.post("/:postId/picture", upload.single("image"), async (req, res) => {
+postsRouter.post("/:postId/picture",passport.authenticate('jwt'), upload.single("image"), async (req, res) => {
     //console.log(req);
     try {
-        const imgDest = path.join(__dirname, "../../../image/posts/" + req.params.postId + req.file.originalname);
-        const imgDestination = req.protocol + "://" + req.get("host") + "/image/posts/" + req.params.postId + req.file.originalname;
+        const imgDest = path.join(__dirname, "../../../image/" + req.params.postId + req.file.originalname);
+        const imgDestination = req.protocol + "://" + req.get("host") + "/image/" + req.params.postId + req.file.originalname;
         await fs.writeFileSync(imgDest, req.file.buffer);
         console.log(imgDestination);
         const exp = await Post.findOneAndUpdate({_id: req.params.postId}, {image: imgDestination}, {
@@ -78,7 +80,7 @@ postsRouter.post("/:postId/picture", upload.single("image"), async (req, res) =>
     }
 });
 
-postsRouter.post("/likes/:postId", async(req,res) => {
+postsRouter.post("/likes/:postId",passport.authenticate('jwt'), async(req,res) => {
     const userLike = await Post.findOne({_id: req.params.postId })
     const likesPart = userLike.likes
     if(likesPart.some(like => like.username == req.user.username)){
@@ -103,7 +105,7 @@ postsRouter.get("/:id/comment", async (req, res) => {
         res.send(error)
     }
 });
-postsRouter.post("/:id/comment", async (req, res) => {
+postsRouter.post("/:id/comment",passport.authenticate('jwt'), async (req, res) => {
     try {
         const post = await Post.findOne({_id: req.params.id});
 
@@ -119,7 +121,7 @@ postsRouter.post("/:id/comment", async (req, res) => {
         res.status(500).send(error);
     }
 });
-postsRouter.put("/:id/comment/:commentId", async (req, res) => {
+postsRouter.put("/:id/comment/:commentId",passport.authenticate('jwt'), async (req, res) => {
     try {
         const comment = await Comment.findOneAndUpdate(
             {_id: req.params.commentId},
@@ -131,7 +133,7 @@ postsRouter.put("/:id/comment/:commentId", async (req, res) => {
         res.status(400).send(error);
     }
 });
-postsRouter.delete("/comment/:commentId", async (req, res) => {
+postsRouter.delete("/comment/:commentId",passport.authenticate('jwt'), async (req, res) => {
     try {
         const comment = await Comment.findOneAndDelete({_id: req.params.commentId});
         res.send(comment);

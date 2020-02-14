@@ -13,6 +13,7 @@ const postSchema = new Schema({
     },
     image:{
         type: String,
+        required: false
     },
     likesTotal: {
         type: Number,
@@ -33,5 +34,5 @@ const postSchema = new Schema({
     }]
 }, { timestamps: true});
 
-const postsCollection = mongoose.model('Post', postSchema);
+const postsCollection = mongoose.model('post', postSchema);
 module.exports = postsCollection;
