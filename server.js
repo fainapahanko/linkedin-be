@@ -89,6 +89,8 @@ server.use((err, req, res, next) => {
     }
 });
 
+server.get('/', (req,res) => res.send('ok'))
+
 
 console.log(listEndpoints(server));
 server.listen(PORT, () => {
