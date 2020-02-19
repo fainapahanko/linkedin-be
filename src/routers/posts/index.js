@@ -8,8 +8,12 @@ const fs = require("fs");
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res) => {
-    const posts = await Post.find({}).populate({path: "comments", populate: { path: 'postedBy', select: 'username profile', populate: { path: 'profile'}}});
-    res.send(posts);
+    try{
+        const posts = await Post.find({}).populate({path: "comments", populate: { path: 'postedBy', select: 'username profile', populate: { path: 'profile'}}});
+        res.send(posts);
+    } catch(err){
+        res.send(err)
+    }
 });
 
 postsRouter.get("/:postId", async (req, res) => {
@@ -28,10 +32,9 @@ postsRouter.get("/:postId", async (req, res) => {
 });
 postsRouter.post("/:username", passport.authenticate('jwt'), async (req, res) => {
     try {
-        console.log('hello')
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
         const post = {...req.body, username: req.params.username};
         const newPost = await Post.create(post);
-        console.log(req.body);
         newPost.save();
         res.send(newPost);
     } catch (error) {
@@ -39,15 +42,16 @@ postsRouter.post("/:username", passport.authenticate('jwt'), async (req, res) =>
     }
 });
 
-postsRouter.put("/:postId",passport.authenticate('jwt'), async (req, res) => {
-
+postsRouter.put("/:postId", passport.authenticate('jwt'), async (req, res) => {
     try {
-        const post = await Post.findOneAndUpdate(
+        const post = await Post.findOne({_id: req.params.postId})
+        if(req.user.username !== post.username) res.status(404).send('User not found')
+        const newPost = await Post.findOneAndUpdate(
             {_id: req.params.postId},
             {$set: {...req.body}},
             {new: true}
         );
-        res.send(post);
+        res.send(newPost);
     } catch (error) {
         res.status(400).send(error);
     }
@@ -55,16 +59,20 @@ postsRouter.put("/:postId",passport.authenticate('jwt'), async (req, res) => {
 
 postsRouter.delete("/:postId",passport.authenticate('jwt'), async (req, res) => {
     try {
-        const post = await Post.findOneAndDelete({_id: req.params.postId});
+        const post = await Post.findOne({_id: req.params.postId})
+        if(req.user.username !== post.username) res.status(404).send('User not found')
+        await Post.findOneAndDelete({_id: req.params.postId});
         res.send(post);
     } catch (error) {
         res.status(400).send(error);
     }
 });
+
 const upload = multer({});
 postsRouter.post("/:postId/picture",passport.authenticate('jwt'), upload.single("image"), async (req, res) => {
     //console.log(req);
     try {
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
         const imgDest = path.join(__dirname, "../../../image/" + req.params.postId + req.file.originalname);
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/" + req.params.postId + req.file.originalname;
         await fs.writeFileSync(imgDest, req.file.buffer);
@@ -108,7 +116,7 @@ postsRouter.get("/:id/comment", async (req, res) => {
 postsRouter.post("/:id/comment",passport.authenticate('jwt'), async (req, res) => {
     try {
         const post = await Post.findOne({_id: req.params.id});
-
+        if(req.user.username !== post.username) res.status(404).send('User not found')
         const comment = await Comment.create({comment: req.body.comment, postedBy: req.user._id});
         // const comment = {...req.body, username: req.user.username};
         // const newComment = await Comment.create(comment);
@@ -123,6 +131,8 @@ postsRouter.post("/:id/comment",passport.authenticate('jwt'), async (req, res) =
 });
 postsRouter.put("/:id/comment/:commentId",passport.authenticate('jwt'), async (req, res) => {
     try {
+        const post = await Post.findOne({_id: req.params.id});
+        if(req.user.username !== post.username) res.status(404).send('User not found')
         const comment = await Comment.findOneAndUpdate(
             {_id: req.params.commentId},
             {$set: {...req.body}},
@@ -133,12 +143,15 @@ postsRouter.put("/:id/comment/:commentId",passport.authenticate('jwt'), async (r
         res.status(400).send(error);
     }
 });
-postsRouter.delete("/comment/:commentId",passport.authenticate('jwt'), async (req, res) => {
+postsRouter.delete("/:id/comment/:commentId",passport.authenticate('jwt'), async (req, res) => {
     try {
+        const post = await Post.findOne({_id: req.params.id});
+        if(req.user.username !== post.username) res.status(404).send('User not found')
         const comment = await Comment.findOneAndDelete({_id: req.params.commentId});
         res.send(comment);
     } catch (error) {
         res.status(400).send(error);
     }
 });
+
 module.exports = postsRouter;

@@ -28,6 +28,7 @@ router.get("/:id", async(req,res) => {
 
 router.post("/", passport.authenticate('jwt'), async(req,res) => {
     try{
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
         const obj = {
             ...req.body,
             username: req.user.username,
@@ -48,12 +49,14 @@ router.post("/", passport.authenticate('jwt'), async(req,res) => {
 })
 
 const upload = multer({})
-router.post("/:id/picture", upload.single("experience"), async(req,res) => {
+router.post("/:id/picture",passport.authenticate('jwt'), upload.single("experience"), async(req,res) => {
     try{
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
         const imgDest = path.join(__dirname,"../../../image/experience/", "image.jpg");
         const imgDestination = req.protocol + "://" + req.get("host") + "/image/experience/" + req.params.id + req.file.originalname;
         await fs.writeFile(imgDest, req.file.buffer);
-        const profile = await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false, new: true});
+        await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false, new: true});
+        const profile = await Profiles.findOne({username: req.params.username})
         res.send({
             profile
         })
@@ -62,8 +65,25 @@ router.post("/:id/picture", upload.single("experience"), async(req,res) => {
     }
 })
 
-router.put("/:id", async(req,res) => {
+router.put("/:id/picture",passport.authenticate('jwt'), upload.single("experience"), async(req,res) => {
     try{
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
+        const imgDest = path.join(__dirname,"../../../image/experience/", "image.jpg");
+        const imgDestination = req.protocol + "://" + req.get("host") + "/image/experience/" + req.params.id + req.file.originalname;
+        await fs.writeFile(imgDest, req.file.buffer);
+        await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false, new: true});
+        const profile = await Profiles.findOne({username: req.params.username})
+        res.send({
+            profile
+        })
+    } catch(err){
+        res.send(err)
+    }
+})
+
+router.put("/:id",passport.authenticate('jwt'), async(req,res) => {
+    try{
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
         delete req.body._id
         const obj = {
             ...req.body,
@@ -80,24 +100,13 @@ router.put("/:id", async(req,res) => {
     }
 })
 
-router.delete("/:id", async(req,res) => {
+router.delete("/:id",passport.authenticate('jwt'), async(req,res) => {
     try{
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
         const exp = await Experience.findByIdAndRemove({_id: req.params.id})
         if(exp) res.status(200).send("deleted")
         else res.status(404).send("Not found")
     } catch(err) {
-        res.send(err)
-    }
-})
-
-router.get("/csv/:userName/getCsv", async(req,res) => {
-    try{
-        const experience = await Experience.find({username: req.params.userName})
-        const fields = ["username", "role", "company", "startDate", "endDate", "description", "area"];
-        const opts = { fields }
-        const csv = json2csv(experience, opts);
-        res.send(csv)
-    } catch(err){
         res.send(err)
     }
 })

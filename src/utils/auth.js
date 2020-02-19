@@ -37,9 +37,6 @@ passport.use(new FacebookStrategy({
         const userFromFaceebook = await User.findOne({facebookId: profile.id}) 
         if(userFromFaceebook) return done(null, userFromFaceebook)
         else{
-            console.log('hello')
-            console.log(accessToken)
-            console.log(profile)
             const name = profile.displayName.split(' ')
             const username = name.join('')
             const newUser = await User.create({

@@ -40,7 +40,6 @@ router.post("/signup", async(req,res) => {
 });
 
 router.post('/signin',
-//  passport.authenticate('local',  {session: false}),
 isAuthenticated,
   (req,res) => {
     try{
