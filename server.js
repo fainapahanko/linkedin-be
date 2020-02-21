@@ -16,7 +16,7 @@ const socketio = require('socket.io')
 const { configureIO } = require("./src/utils/socket")
 dotenv.config();
 
-mongoose.connect(process.env.LOCAL, {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, (err) => console.log(err ? err : "MongoDB connected successefully") )
