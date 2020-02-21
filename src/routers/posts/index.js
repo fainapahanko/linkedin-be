@@ -4,7 +4,7 @@ const Post = require("../../models/posts");
 const passport = require('passport')
 const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 const multer = require("multer");
-const MulterAzureStorage = require('multer-azure-storage')
+const MulterAzureStorage = require('multer-azure-blob-storage').MulterAzureStorage
 const path = require("path");
 const fs = require("fs");
 const postsRouter = express.Router();
@@ -15,9 +15,16 @@ const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net
 
 const upload = multer({
   storage: new MulterAzureStorage({
-    azureStorageConnectionString: process.env.AZURE_STORAGE,
+    // azureStorageConnectionString: process.env.AZURE_STORAGE,
+    // containerName: 'posts',
+    // containerSecurity: 'blob'
+    connectionString: process.env.AZURE_STORAGE,
+    accessKey: process.env.AZURE_STORAGE_KEY,
+    accountName: 'imageslinkedin',
     containerName: 'posts',
-    containerSecurity: 'blob'
+    blobName: resolveBlobName,
+    metadata: resolveMetadata,
+    containerAccessLevel: 'blob',
   })
 })
 

@@ -5,18 +5,27 @@ const fs = require("fs-extra")
 const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 const multer = require("multer")
 const Experience = require("../../models/experience")
-const MulterAzureStorage = require('multer-azure-storage')
+const MulterAzureStorage = require('multer-azure-blob-storage').MulterAzureStorage;
+// const MulterAzureStorage = require('multer-azure-storage')
 const Profiles = require("../../models/profiles")
 const passport = require('passport')
 
 const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
 const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
 
+
 const upload = multer({
     storage: new MulterAzureStorage({
-      azureStorageConnectionString: process.env.AZURE_STORAGE,
+    //   azureStorageConnectionString: process.env.AZURE_STORAGE,
+    //   containerName: 'experience',
+    //   containerSecurity: 'blob',
+      connectionString: process.env.AZURE_STORAGE,
+      accessKey: process.env.AZURE_STORAGE_KEY,
+      accountName: 'imageslinkedin',
       containerName: 'experience',
-      containerSecurity: 'blob'
+      blobName: resolveBlobName,
+      metadata: resolveMetadata,
+      containerAccessLevel: 'blob',
     })
 })
 
