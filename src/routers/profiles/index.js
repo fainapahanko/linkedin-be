@@ -7,6 +7,8 @@ const MulterAzureStorage = require('multer-azure-blob-storage').MulterAzureStora
 const profilesRouter = express.Router();
 const multer = require("multer");
 const passport = require('passport')
+const dotenv = require('dotenv')
+dotenv.config()
 
 const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
 const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
