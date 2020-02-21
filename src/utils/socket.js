@@ -7,7 +7,7 @@ module.exports = {
             socket.on("login", (payload) => {
                 const token = checkToken(payload.token);
                 const username = payload.username
-                socket.username =  username// <== here we are setting the property!!!
+                socket.username =  username// <== here we are setting the property!!
                 const connectedUsers = []
                 Object.keys(io.sockets.connected).forEach(socketKey => { //we are searching in the connected sockets
                     if (io.sockets.connected[socketKey].username)
