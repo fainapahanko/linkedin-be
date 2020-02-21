@@ -37,6 +37,7 @@ const upload = multer({
     blobName: resolveBlobName,
     metadata: resolveMetadata,
     containerAccessLevel: 'blob',
+    urlExpirationTime: 60
   })
 })
 
