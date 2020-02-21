@@ -13,7 +13,6 @@ const server = express();
 const cors = require("cors");
 const http = require('http')
 const socketio = require('socket.io')
-const WEBSITES_PORT = 8080
 const { configureIO } = require("./src/utils/socket")
 dotenv.config();
 
