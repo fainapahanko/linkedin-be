@@ -4,10 +4,8 @@ const path = require("path")
 const fs = require("fs-extra")
 const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 const multer = require("multer")
-
 const Experience = require("../../models/experience")
-const MulterAzureStorage = require('multer-azure-blob-storage').MulterAzureStorage;
-// const MulterAzureStorage = require('multer-azure-storage')
+const MulterAzureStorage = require('multer-azure-storage')
 const Profiles = require("../../models/profiles")
 const passport = require('passport')
 const dotenv = require('dotenv')
@@ -32,17 +30,9 @@ const resolveMetadata = (req, file) => {
 
 const upload = multer({
     storage: new MulterAzureStorage({
-    //   azureStorageConnectionString: process.env.AZURE_STORAGE,
-    //   containerName: 'experience',
-    //   containerSecurity: 'blob',
-      connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
-      accessKey: process.env.AZURE_STORAGE_KEY,
-      accountName: 'imageslinkedin',
+      azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
       containerName: 'experience',
-      blobName: resolveBlobName,
-      metadata: resolveMetadata,
-      containerAccessLevel: 'blob',
-      urlExpirationTime: 60
+      containerSecurity: 'blob',
     })
 })
 

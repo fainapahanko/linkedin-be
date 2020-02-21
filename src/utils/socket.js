@@ -7,9 +7,9 @@ module.exports = {
             socket.on("login", (payload) => {
                 const token = checkToken(payload.token);
                 const username = payload.username
-                socket.username =  username// <== here we are setting the property!!
+                socket.username =  username
                 const connectedUsers = []
-                Object.keys(io.sockets.connected).forEach(socketKey => { //we are searching in the connected sockets
+                Object.keys(io.sockets.connected).forEach(socketKey => { 
                     if (io.sockets.connected[socketKey].username)
                         connectedUsers.push(io.sockets.connected[socketKey].username)
                 })
@@ -27,7 +27,7 @@ module.exports = {
                 socket.broadcast.emit("message", message)
                 Object.keys(io.sockets.connected).forEach(async key => { 
                     if (message.from === io.sockets.connected[key].username) {
-                        const msg = await Message.create({
+                        await Message.create({
                             from: message.from,
                             to: message.to,
                             text: message.text,
