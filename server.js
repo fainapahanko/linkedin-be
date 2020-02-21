@@ -13,17 +13,17 @@ const server = express();
 const cors = require("cors");
 const http = require('http')
 const socketio = require('socket.io')
+const WEBSITES_PORT=80
 const { configureIO } = require("./src/utils/socket")
 dotenv.config();
-const PORT = process.env.PORT || 3433
 
 mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, (err) => console.log(err ? err : "MongoDB connected successefully") )
 
-server.set('port', PORT)
-const socketServer = http.createServer(server)
+server.set('port',process.env.PORT || 3433)
+const socketServer = http.createServer(server).listen(server.get('port'))
 const io = socketio(socketServer)
 io.set('transports', ['websocket'])
 configureIO(io)
@@ -95,8 +95,6 @@ server.use((err, req, res, next) => {
 });
 
 server.get('/', (req,res) => res.send('ok'))
-
-server.listen(PORT, () => console.log("we are running on localhost " + PORT))
 
 console.log(listEndpoints(server));
 
