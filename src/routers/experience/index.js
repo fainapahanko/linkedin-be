@@ -35,7 +35,7 @@ const upload = multer({
     //   azureStorageConnectionString: process.env.AZURE_STORAGE,
     //   containerName: 'experience',
     //   containerSecurity: 'blob',
-      connectionString: process.env.AZURE_STORAGE,
+      connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
       accessKey: process.env.AZURE_STORAGE_KEY,
       accountName: 'imageslinkedin',
       containerName: 'experience',
