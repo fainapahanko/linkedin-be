@@ -15,13 +15,14 @@ const http = require('http')
 const socketio = require('socket.io')
 const { configureIO } = require("./src/utils/socket")
 dotenv.config();
+const PORT = process.env.PORT || 3433
 
 mongoose.connect(process.env.LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, (err) => console.log(err ? err : "MongoDB connected successefully") )
 
-server.set('port',process.env.PORT || 3433)
+server.set('port', PORT)
 const socketServer = http.createServer(server).listen(server.get('port'))
 const io = socketio(socketServer)
 io.set('transports', ['websocket'])
