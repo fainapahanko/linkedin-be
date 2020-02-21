@@ -23,7 +23,7 @@ mongoose.connect(process.env.LOCAL, {
 }, (err) => console.log(err ? err : "MongoDB connected successefully") )
 
 server.set('port', PORT)
-const socketServer = http.createServer(server).listen(server.get('port'))
+const socketServer = http.createServer(server)
 const io = socketio(socketServer)
 io.set('transports', ['websocket'])
 configureIO(io)
@@ -95,6 +95,8 @@ server.use((err, req, res, next) => {
 });
 
 server.get('/', (req,res) => res.send('ok'))
+
+server.listen(PORT, () => console.log("we are running on localhost " + PORT))
 
 console.log(listEndpoints(server));
 
