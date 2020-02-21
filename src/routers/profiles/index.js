@@ -11,6 +11,20 @@ const passport = require('passport')
 const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
 const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
 
+const resolveBlobName = (req, file) => {
+    return new Promise((resolve, reject) => {
+        const blobName = yourCustomLogic(req, file);
+        resolve(blobName);
+    });
+};
+ 
+const resolveMetadata = (req, file) => {
+    return new Promise((resolve, reject) => {
+        const metadata = yourCustomLogic(req, file);
+        resolve(metadata);
+    });
+};
+
 const upload = multer({
   storage: new MulterAzureStorage({
     // azureStorageConnectionString: process.env.AZURE_STORAGE,
