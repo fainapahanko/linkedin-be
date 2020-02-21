@@ -56,5 +56,6 @@ passport.use(new FacebookStrategy({
 ));
 
 module.exports = {
-    getToken: userInfo => jwt.sign(userInfo, process.env.TOKEN_PASSWORD, { expiresIn: 6000 })
+    getToken: userInfo => jwt.sign(userInfo, process.env.TOKEN_PASSWORD, { expiresIn: 6000 }),
+    checkToken: (token) => jwt.verify(token, process.env.TOKEN_PASSWORD)
 }

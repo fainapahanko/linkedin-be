@@ -2,11 +2,23 @@ const express = require("express")
 const router = express.Router({mergeParams: true})
 const path = require("path")
 const fs = require("fs-extra")
+const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 const multer = require("multer")
-const json2csv = require("json2csv").parse;
 const Experience = require("../../models/experience")
+const MulterAzureStorage = require('multer-azure-storage')
 const Profiles = require("../../models/profiles")
 const passport = require('passport')
+
+const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
+const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
+
+const upload = multer({
+    storage: new MulterAzureStorage({
+      azureStorageConnectionString: process.env.AZURE_STORAGE,
+      containerName: 'experience',
+      containerSecurity: 'blob'
+    })
+})
 
 router.get("/", async(req,res) => {
     try{
@@ -35,46 +47,32 @@ router.post("/", passport.authenticate('jwt'), async(req,res) => {
             createdAt: new Date(),
             updatedAt: new Date()
         };
-        const newExperience = await Experience.create(obj)
-        const user = await Profiles.updateOne(
-            { username: req.params.userName },
-            { $push: { "experience" : newExperience._id } }
+        const exp = await Experience.create(obj)
+        const user = await Profiles.findOneAndUpdate(
+            { username: req.user.username },
+            { $push: { "experiences" : exp._id } }
         )
-        user.save()
-        newExperience.save();
-        res.status(200).send(newExperience)
+        console.log(exp)
+        console.log(user)
+        res.status(200).send(exp)
     } catch(err) {
         res.send(err)
     }
 })
 
-const upload = multer({})
 router.post("/:id/picture",passport.authenticate('jwt'), upload.single("experience"), async(req,res) => {
     try{
         if(req.user.username !== req.params.username) res.status(404).send('User not found')
-        const imgDest = path.join(__dirname,"../../../image/experience/", "image.jpg");
-        const imgDestination = req.protocol + "://" + req.get("host") + "/image/experience/" + req.params.id + req.file.originalname;
-        await fs.writeFile(imgDest, req.file.buffer);
-        await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false, new: true});
-        const profile = await Profiles.findOne({username: req.params.username})
+        // const userExp = await Experience.findOne({_id: req.params.id})
+        // if (userExp.image !== "http://www.gigabitmagazine.com/sites/default/files/styles/slider_detail/public/topic/image/GettyImages-1017193718_1.jpg?itok=W4-tjXij"){ 
+        //     const container = blob.getContainerClient("experience"); 
+        //     const urlParts = userExp.image.split("/")
+        //     const filename = urlParts.reverse()[0]
+        //     await container.deleteBlob(filename)
+        // }
+        const exp = await Experience.findOneAndUpdate({_id: req.params.id}, {image: req.file.url},{useFindAndModify: false, new: true});
         res.send({
-            profile
-        })
-    } catch(err){
-        res.send(err)
-    }
-})
-
-router.put("/:id/picture",passport.authenticate('jwt'), upload.single("experience"), async(req,res) => {
-    try{
-        if(req.user.username !== req.params.username) res.status(404).send('User not found')
-        const imgDest = path.join(__dirname,"../../../image/experience/", "image.jpg");
-        const imgDestination = req.protocol + "://" + req.get("host") + "/image/experience/" + req.params.id + req.file.originalname;
-        await fs.writeFile(imgDest, req.file.buffer);
-        await Experience.findOneAndUpdate({_id: req.params.id}, {image: imgDestination},{useFindAndModify: false, new: true});
-        const profile = await Profiles.findOne({username: req.params.username})
-        res.send({
-            profile
+            exp
         })
     } catch(err){
         res.send(err)

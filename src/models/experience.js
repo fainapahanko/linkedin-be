@@ -31,7 +31,7 @@ const experienceSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: false
+        default: "http://www.gigabitmagazine.com/sites/default/files/styles/slider_detail/public/topic/image/GettyImages-1017193718_1.jpg?itok=W4-tjXij"
     }
 })
 

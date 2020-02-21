@@ -2,6 +2,7 @@ const listEndpoints = require("express-list-endpoints");
 const express = require("express");
 const mongoose =  require("mongoose");
 const profilesRouter = require("./src/routers/profiles/index");
+const msgRouter = require("./src/routers/msg/index");
 const authRouter = require("./src/routers/auth/index");
 const usersRouter = require("./src/routers/users/index");
 const experienceRouter = require("./src/routers/experience/index");
@@ -10,7 +11,9 @@ const dotenv = require("dotenv");
 const passport = require('passport')
 const server = express();
 const cors = require("cors");
-const PORT = process.env.PORT || 3433;
+const http = require('http')
+const socketio = require('socket.io')
+const { configureIO } = require("./src/utils/socket")
 dotenv.config();
 
 mongoose.connect(process.env.LOCAL, {
@@ -18,25 +21,26 @@ mongoose.connect(process.env.LOCAL, {
     useUnifiedTopology: true
 }, (err) => console.log(err ? err : "MongoDB connected successefully") )
 
+server.set('port',process.env.PORT || 3433)
+const socketServer = http.createServer(server).listen(server.get('port'))
+const io = socketio(socketServer)
+io.set('transports', ['websocket'])
+configureIO(io)
+
 const LoggerMiddleware = (req, res, next) => {
     console.log(`${req.url} ${req.method} -- ${new Date()}`);
-    //console.log(req.session);
     next();
 };
 
 
 server.use(LoggerMiddleware);
 server.use(cors());
-// server.use(session({ 
-//     secret: 'abcdefg',
-//     resave: true,
-//     saveUninitialized: false
-//  }));
 server.use(express.json())
 server.use(passport.initialize())
 server.use(passport.session())
 
 server.use("/profile", profilesRouter);
+server.use("/msg", msgRouter);
 server.use("/auth", authRouter);
 server.use("/profile/:username/experiences", experienceRouter);
 server.use("/image", express.static('image'));
@@ -91,10 +95,6 @@ server.use((err, req, res, next) => {
 
 server.get('/', (req,res) => res.send('ok'))
 
-
 console.log(listEndpoints(server));
-server.listen(PORT, () => {
-    console.log("We are running on localhost", PORT)
-})
 
 

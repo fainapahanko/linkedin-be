@@ -2,10 +2,24 @@ const express = require("express");
 const Comment = require("../../models/comment");
 const Post = require("../../models/posts");
 const passport = require('passport')
+const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 const multer = require("multer");
+const MulterAzureStorage = require('multer-azure-storage')
 const path = require("path");
 const fs = require("fs");
 const postsRouter = express.Router();
+
+const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
+const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
+
+
+const upload = multer({
+  storage: new MulterAzureStorage({
+    azureStorageConnectionString: process.env.AZURE_STORAGE,
+    containerName: 'posts',
+    containerSecurity: 'blob'
+  })
+})
 
 postsRouter.get("/", async (req, res) => {
     try{
@@ -68,20 +82,22 @@ postsRouter.delete("/:postId",passport.authenticate('jwt'), async (req, res) => 
     }
 });
 
-const upload = multer({});
 postsRouter.post("/:postId/picture",passport.authenticate('jwt'), upload.single("image"), async (req, res) => {
     //console.log(req);
     try {
         if(req.user.username !== req.params.username) res.status(404).send('User not found')
-        const imgDest = path.join(__dirname, "../../../image/" + req.params.postId + req.file.originalname);
-        const imgDestination = req.protocol + "://" + req.get("host") + "/image/" + req.params.postId + req.file.originalname;
-        await fs.writeFileSync(imgDest, req.file.buffer);
-        console.log(imgDestination);
-        const exp = await Post.findOneAndUpdate({_id: req.params.postId}, {image: imgDestination}, {
+        const userPost = await Post.findOne({_id: req.params.postId})
+        if (userPost.image){ 
+            const container = blob.getContainerClient("linkedinexperience"); 
+            const urlParts = userPost.image.split("/")
+            const filename = urlParts.reverse()[0]
+            await container.deleteBlob(filename)
+        }
+        const post = await Post.findOneAndUpdate({_id: req.params.postId}, {image: req.file.url}, {
             new: true,
             useFindAndModify: false
         });
-        res.send(exp)
+        res.send(post)
     } catch (err) {
         console.log(err);
         res.send(err)

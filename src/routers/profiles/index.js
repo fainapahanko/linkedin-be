@@ -1,12 +1,23 @@
 const express = require("express");
 const Profile = require("../../models/profiles");
 const Exp = require('../../models/experience')
+const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 const User = require('../../models/users')
+const MulterAzureStorage = require('multer-azure-storage')
 const profilesRouter = express.Router();
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs-extra");
 const passport = require('passport')
+
+const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
+const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
+
+const upload = multer({
+  storage: new MulterAzureStorage({
+    azureStorageConnectionString: process.env.AZURE_STORAGE,
+    containerName: 'profile',
+    containerSecurity: 'blob'
+  })
+})
 
 profilesRouter.get("/", async (req, res)=>{
     if (req.query.name)
@@ -16,25 +27,21 @@ profilesRouter.get("/", async (req, res)=>{
 });
 
 profilesRouter.get("/me", passport.authenticate('jwt',  {session: false}), async (req, res) => {
-    console.log(req.user)
-    const profile = await Profile.findOne({username: req.user.username});
-    const experience = await Exp.find({username: req.user.username})
+    const profile = await Profile.findOne({username: req.user.username}).populate('experiences');
     if (profile) {
-        res.send({profile : profile, experience: experience});
+        res.send(profile);
     } else
         res.status(404).send("Not found")
 });
 
 profilesRouter.get("/:username", async (req, res) => {
-    const profile = await Profile.findOne({ username: req.params.username });
-    const experience = await Exp.find({username: req.params.username})
+    const profile = await Profile.findOne({ username: req.params.username }).populate('experiences')
     if (profile) {
-        res.send({profile: profile, experience: experience});
+        res.send(profile);
     } else
         res.status(404).send("Not found")
 });
 
-const upload = multer({});
 profilesRouter.post("/:username",
  passport.authenticate('jwt', {session: false}),
   async (req, res) => {
@@ -75,13 +82,24 @@ profilesRouter.delete("/:_id", passport.authenticate('jwt'), async (req, res) =>
         res.status(404).send("not found");
 });
 
-profilesRouter.post("/:username/picture",passport.authenticate('jwt'), upload.single("profile"), async (req, res) => {
-    try {
-        let imgDest = path.join(__dirname, "../../../image/", req.params.username + req.file.originalname);
-        const imgDestination = req.protocol + "://" + req.get("host") + "/image/" + req.params.username + req.file.originalname;
-        await fs.writeFile(imgDest, req.file.buffer);
-        const exp = await Profile.findOneAndUpdate({ username: req.params.username }, { image: imgDestination }, { new: true, useFindAndModify: false });
-        res.send(exp)
+profilesRouter.post("/:username/picture",
+passport.authenticate('jwt'), 
+upload.single("profile"), async (req, res) => {
+    console.log('yo')
+    try{
+        if(req.user.username !== req.params.username) res.status(404).send('User not found')
+        // const userProfile = await Profile.findOne({username: req.params.username})
+        // if (userProfile.image !== "https://fooddole.com/Modules/eCommerce/images/default-img.png"){ 
+        //     const container = await blob.getContainerClient("profile"); 
+        //     console.log(container)
+        //     const urlParts = userProfile.image.split("/")
+        //     console.log(urlParts)
+        //     const filename = urlParts.reverse()[0]
+        //     console.log(filename)
+        //     await container.deleteBlob(filename)
+        // }
+        const profile = await Profile.findOneAndUpdate({ username: req.params.username }, { image: req.file.url }, { new: true, useFindAndModify: false }).populate('experiences');
+        res.send(profile)
     } catch (err) {
         res.send(err)
     }
