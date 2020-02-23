@@ -69,6 +69,7 @@ profilesRouter.post("/:username",
             updatedAt: new Date()
         }
         const profile = await Profile.create(obj);
+        console.log(profile)
         await User.findOneAndUpdate({username: req.params.username}, {profile: profile._id})
         res.send(profile);
     } catch (exx) {
@@ -83,7 +84,7 @@ profilesRouter.put("/:id", passport.authenticate('jwt',  {session: false}), asyn
         {
             $set:
                 { ...req.body }
-        });
+        }).populate('experiences');
     if (profile)
         res.send(profile);
     else
