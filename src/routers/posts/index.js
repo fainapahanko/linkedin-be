@@ -65,6 +65,7 @@ postsRouter.post("/:username", passport.authenticate('jwt'), async (req, res) =>
         if(req.user.username !== req.params.username) res.status(404).send('User not found')
         const post = {...req.body, username: req.params.username};
         const newPost = await Post.create(post);
+        console.log(newPost)
         newPost.save();
         res.send(newPost);
     } catch (error) {

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema({
     text: {
         type: String,
-        required: [true, "Type in a comment!"],
+        required: true,
         minlength: 3,
         maxlength: 50
     },
