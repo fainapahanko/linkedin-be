@@ -11,22 +11,22 @@ const postsRouter = express.Router();
 const dotenv = require('dotenv')
 dotenv.config()
 
-const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
-const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
+// const credentials = new StorageSharedKeyCredential("imageslinkedin", process.env.AZURE_STORAGE_KEY )
+// const blob = new BlobServiceClient("https://imageslinkedin.blob.core.windows.net/",  credentials)
 
-const resolveBlobName = (req, file) => {
-    return new Promise((resolve, reject) => {
-        const blobName = yourCustomLogic(req, file);
-        resolve(blobName);
-    });
-};
+// const resolveBlobName = (req, file) => {
+//     return new Promise((resolve, reject) => {
+//         const blobName = yourCustomLogic(req, file);
+//         resolve(blobName);
+//     });
+// };
  
-const resolveMetadata = (req, file) => {
-    return new Promise((resolve, reject) => {
-        const metadata = yourCustomLogic(req, file);
-        resolve(metadata);
-    });
-};
+// const resolveMetadata = (req, file) => {
+//     return new Promise((resolve, reject) => {
+//         const metadata = yourCustomLogic(req, file);
+//         resolve(metadata);
+//     });
+// };
 
 
 const upload = multer({
@@ -102,13 +102,13 @@ postsRouter.post("/:postId/picture",passport.authenticate('jwt'), upload.single(
     //console.log(req);
     try {
         if(req.user.username !== req.params.username) res.status(404).send('User not found')
-        const userPost = await Post.findOne({_id: req.params.postId})
-        if (userPost.image){ 
-            const container = blob.getContainerClient("linkedinexperience"); 
-            const urlParts = userPost.image.split("/")
-            const filename = urlParts.reverse()[0]
-            await container.deleteBlob(filename)
-        }
+        // const userPost = await Post.findOne({_id: req.params.postId})
+        // if (userPost.image){ 
+        //     const container = blob.getContainerClient("linkedinexperience"); 
+        //     const urlParts = userPost.image.split("/")
+        //     const filename = urlParts.reverse()[0]
+        //     await container.deleteBlob(filename)
+        // }
         const post = await Post.findOneAndUpdate({_id: req.params.postId}, {image: req.file.url}, {
             new: true,
             useFindAndModify: false
