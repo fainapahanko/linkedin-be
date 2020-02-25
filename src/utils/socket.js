@@ -38,14 +38,5 @@ module.exports = {
                 })
             })
         })
-        // io.on('connection', socket => {
-        //     socket.emit('list', () => {
-
-        //     })
-        //     socket.on('broadcast', payload => {
-        //         console.log("first payload", payload)
-        //         socket.broadcast.emit('broadcast', payload)
-        //     })
-        // })
     }
 }

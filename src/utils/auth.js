@@ -45,11 +45,9 @@ passport.use(new FacebookStrategy({
                 accessToken: accessToken
             }) 
             newUser.save()
-            console.log(newUser)
             return done(null, newUser)
         }
       } catch(err){
-        console.log(err)
         return done(err)
       }  
   }
