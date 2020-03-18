@@ -15,7 +15,10 @@ passport.use(new LocalStrategy({
     usernameField: 'username',
 }, User.authenticate()))
 
-const jwtConfig = { jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: process.env.TOKEN_PASSWORD  }
+const jwtConfig = { 
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 
+    secretOrKey: process.env.TOKEN_PASSWORD  
+}
 
 passport.use(new JwtStrategy(jwtConfig,
     (jwtPayload, next) =>{
